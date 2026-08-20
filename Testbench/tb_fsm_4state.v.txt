@@ -1,0 +1,46 @@
+`timescale 1ns/1ps 
+ 
+module tb_fsm_4state; 
+ 
+    reg clk; 
+    reg reset; 
+    wire [1:0] y; 
+ 
+    // Instantiate DUT (Device Under Test) 
+    fsm_4state uut ( 
+        .clk(clk), 
+        .reset(reset), 
+        .y(y) 
+    ); 
+    // Clock generation: 10 ns period 
+    always #5 clk = ~clk; 
+ 
+    initial begin 
+        // Initialize 
+        clk = 0; 
+        reset = 1; 
+ 
+        // Keep reset active for 10 ns 
+        #10; 
+ 
+        // Release reset 
+        reset = 0; 
+ 
+        // Run for 50 ns 
+        #50; 
+ 
+        $finish; 
+    end 
+ 
+    // Display values whenever they change 
+    initial begin 
+        $monitor("Time = %0t | Reset = %b | State = %b | Output y = %b", 
+                 $time, reset, uut.state, y); 
+    end 
+ 
+    // Generate waveform 
+    initial begin 
+        $dumpfile("fsm_4state.vcd"); 
+        $dumpvars(0, tb_fsm_4state); 
+    end 
+endmodule 

@@ -1,0 +1,80 @@
+`timescale 1ns/1ps 
+ 
+module tb_sequence_detector_1011; 
+ 
+    reg clk; 
+    reg reset; 
+    reg X; 
+ 
+    wire Y; 
+ 
+    // Instantiate the DUT 
+    sequence_detector_1011 uut ( 
+        .clk(clk), 
+        .reset(reset), 
+        .X(X), 
+        .Y(Y) 
+    ); 
+ 
+    // Clock generation 
+    always #5 clk = ~clk; 
+ 
+    // Generate waveform 
+    initial begin 
+        $dumpfile("1011_detector.vcd"); 
+        $dumpvars(0, tb_sequence_detector_1011); 
+    end 
+ 
+    // Display values whenever they change 
+    initial begin 
+        $monitor("Time=%0t | clk=%b | reset=%b | X=%b | Q1=%b | Q0=%b | Y=%b", 
+                 $time, clk, reset, X, uut.Q1, uut.Q0, Y); 
+    end 
+ 
+    // Test sequence
+     initial begin 
+ 
+        // Initial values 
+        clk   = 0; 
+        reset = 1; 
+25 
+ 
+        X     = 0; 
+ 
+        // Keep reset active 
+        #10; 
+ 
+        // Release reset 
+        reset = 0; 
+ 
+        // Input sequence: 1 
+        X = 1; 
+        #10; 
+ 
+        // Input sequence: 0 
+        X = 0; 
+        #10; 
+ 
+        // Input sequence: 1
+           X = 1; 
+        #10; 
+ 
+        // Input sequence: 1 
+        // 1011 should be detected here 
+        X = 1; 
+        #10; 
+ 
+        // Extra inputs for testing 
+        X = 0; 
+        #10; 
+ 
+        X = 1; 
+        #10; 
+ 
+        X = 1; 
+        #10; 
+ 
+        $finish; 
+    end 
+ 
+endmodule

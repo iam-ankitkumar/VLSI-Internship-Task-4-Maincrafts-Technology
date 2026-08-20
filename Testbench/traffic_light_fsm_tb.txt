@@ -1,0 +1,65 @@
+`timescale 1ns/1ps 
+module traffic_light_fsm_tb; 
+ 
+    reg clk; 
+    reg reset; 
+    reg X; 
+ 
+    wire RED; 
+    wire GREEN; 
+    wire YELLOW; 
+ 
+    // Instantiate DUT 
+    traffic_light_fsm uut ( 
+        .clk(clk), 
+        .reset(reset), 
+        .X(X), 
+        .RED(RED),
+        .GREEN(GREEN), 
+        .YELLOW(YELLOW) 
+    ); 
+ 
+    // Clock generation 
+    always #5 clk = ~clk; 
+ 
+    initial begin 
+        // Initialize 
+        clk = 0; 
+        reset = 1; 
+        X = 0; 
+ 
+        // Waveform dump 
+        $dumpfile("traffic_light.vcd"); 
+        $dumpvars(0, traffic_light_fsm_tb);
+          // Reset 
+        #10; 
+        reset = 0; 
+        // X = 0 → Stay in RED 
+        #20; 
+        // X = 1 → RED to GREEN 
+        X = 1; 
+        #10; 
+        // X = 0 → Stay in GREEN 
+        X = 0; 
+        #20; 
+        // X = 1 → GREEN to YELLOW 
+        X = 1; 
+        #10; 
+ 
+        // X = 0 → Stay in YELLOW 
+        X = 0; 
+        #20; 
+ 
+        // X = 1 → YELLOW to RED 
+        X = 1; 
+        #10; 
+        // Stop simulation 
+        $finish; 
+    end 
+ 
+    // Display results 
+    initial begin 
+        $monitor("Time=%0t | Reset=%b | X=%b | RED=%b GREEN=%b YELLOW=%b", 
+                 $time, reset, X, RED, GREEN, YELLOW); 
+    end 
+endmodule 

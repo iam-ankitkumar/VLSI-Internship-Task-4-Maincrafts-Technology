@@ -1,0 +1,77 @@
+module traffic_light_fsm ( 
+    input  clk, 
+    input  reset, 
+    input  X, 
+ 
+    output reg RED, 
+    output reg GREEN, 
+    output reg YELLOW 
+); 
+ 
+    // State encoding 
+    parameter S0 = 2'b00;   // RED 
+    parameter S1 = 2'b01;   // GREEN 
+    parameter S2 = 2'b10;   // YELLOW 
+ 
+    reg [1:0] state, next_state; 
+ 
+    // State register 
+    always @(posedge clk) begin 
+        if (reset) 
+            state <= S0; 
+        else 
+            state <= next_state; 
+    end 
+ 
+    // Next-state logic 
+    always @(*) begin 
+        case (state) 
+ 
+            S0: begin 
+                if (X) 
+                    next_state = S1; 
+                else 
+                    next_state = S0; 
+            end 
+ 
+            S1: begin 
+                if (X) 
+                    next_state = S2; 
+                else 
+                    next_state = S1; 
+            end 
+ 
+            S2: begin 
+                if (X) 
+                    next_state = S0; 
+                else 
+ 
+                    next_state = S2; 
+            end 
+ 
+            default: 
+                next_state = S0; 
+ 
+        endcase 
+    end 
+ 
+    // Moore output logic 
+    always @(*) begin 
+        RED   = 1'b0; 
+        GREEN = 1'b0; 
+        YELLOW = 1'b0; 
+ 
+        case (state) 
+ 
+            S0: RED = 1'b1; 
+ 
+            S1: GREEN = 1'b1; 
+ 
+            S2: YELLOW = 1'b1; 
+ 
+            default: RED = 1'b1; 
+ 
+        endcase 
+    end 
+ 
+endmodule 

@@ -1,0 +1,67 @@
+`timescale 1ns/1ps 
+module tb_mealy_fsm; 
+ 
+    reg clk; 
+    reg reset; 
+    reg X; 
+    wire Y; 
+ 
+    // Instantiate the FSM 
+    mealy_fsm uut ( 
+        .clk(clk), 
+        .reset(reset), 
+        .X(X), 
+        .Y(Y) 
+    ); 
+ 
+    // Clock generation 
+12 
+ 
+    always #5 clk = ~clk; 
+    initial begin 
+ 
+        // Initialize 
+        clk = 0; 
+        reset = 1; 
+        X = 0; 
+ 
+        // Reset FSM 
+        #10; 
+        reset = 0; 
+ 
+        // S0, X=0 → S0, Y=0 
+        X = 0; 
+        #10; 
+ 
+        // S0, X=1 → S1, Y=0 
+        X = 1; 
+        #10; 
+ 
+        // S1, X=0 → S1, Y=0 
+        X = 0; 
+        #10; 
+ 
+        // S1, X=1 → S0, Y=1 
+        X = 1; 
+        #10; 
+ 
+        // Test again 
+        X = 0; 
+        #10; 
+ 
+        X = 1; 
+        #10; 
+ 
+        $finish; 
+    end 
+    // Display simulation results 
+    initial begin 
+        $monitor("Time=%0t | Reset=%b | State=%b | X=%b | Y=%b", 
+                 $time, reset, uut.state, X, Y); 
+    end 
+    // Generate VCD waveform 
+    initial begin 
+        $dumpfile("mealy_fsm.vcd"); 
+        $dumpvars(0, tb_mealy_fsm); 
+    end 
+endmodule

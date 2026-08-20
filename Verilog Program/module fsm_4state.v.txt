@@ -1,0 +1,41 @@
+module fsm_4state ( 
+    input  clk, 
+    input  reset, 
+    output reg [1:0] y 
+); 
+ 
+    reg [1:0] state; 
+ 
+    // State encoding 
+    parameter S0 = 2'b00; 
+    parameter S1 = 2'b01; 
+    parameter S2 = 2'b10; 
+    parameter S3 = 2'b11; 
+ 
+    // State register 
+    always @(posedge clk) begin 
+        if (reset) 
+            state <= S0; 
+        else begin 
+            case (state) 
+                S0: state <= S1; 
+                S1: state <= S2; 
+                S2: state <= S3; 
+                S3: state <= S0; 
+                default: state <= S0; 
+            endcase 
+        end 
+    end 
+ 
+    // Moore output logic 
+    always @(*) begin 
+        case (state) 
+            S0: y = 2'b00; 
+            S1: y = 2'b01; 
+            S2: y = 2'b10; 
+            S3: y = 2'b11; 
+            default: y = 2'b00; 
+        endcase 
+    end 
+ 
+endmodule
